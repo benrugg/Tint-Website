@@ -5,10 +5,8 @@ $(document).ready(function() {
 	var numLEDs = 160;
 	
 	
-	// initialize other variables
-	var pusherAPIKey = "abbed27716bfdc0b8829";
-	var pusher;
-	var connectedToPusher = false;
+	// set the IP address of the Arduino
+	var arduinoIP = "192.168.1.82";
 	
 	
 	
@@ -36,10 +34,6 @@ $(document).ready(function() {
 	
 	
 	// ---------------------------- initial execution ---------------------------
-	
-	// connect to the Pusher service
-	initializePusher();
-	
 	
 	// kick things off by processing the colors
 	processColors();
@@ -191,63 +185,22 @@ $(document).ready(function() {
 	
 	
 	
-	// ----------------------------- pusher ---------------------------
-	
-	function initializePusher() {
-		
-		// Enable pusher logging - xxx don't include this in production
-		Pusher.log = function(message) {
-		  if (window.console && window.console.log) window.console.log(message);
-		};
-		
-		
-		// Flash fallback logging - don't include this in production
-		//WEB_SOCKET_DEBUG = true;
-		
-		
-		// create a new Pusher client instance and subscribe to the main channel
-		pusher = new Pusher(pusherAPIKey);
-		var channel = pusher.subscribe('main');
-		
-		
-		// once we connect successfully, set the flag so we know
-		channel.bind('pusher:subscription_succeeded', function() {
-			
-			connectedToPusher = true;
-		});
-		
-		
-		// xxx can use listen for pusher:subscription_error if we want
-	}
-	
+	// ------------------------ send colors to arduino -----------------------
 	
 	function sendColors() {
 		
-		if (!connectedToPusher) {
+		// send the colors to the arduino via ajax
+		$.ajax({
+			url: "http://" + arduinoIP + "/?" + $("#outputColors").val() + "."
+		}).done(function(response) {
 			
-			console.log("sorry, we're not connected to pusher");
+			console.log("colors sent. response: ");
+			console.log(response);
 			
-		} else {
+		}).fail(function(response) {
 			
-			// prepare the data we want to send
-			var colors = {colors: $("#outputColors").val(), socketID: pusher.connection.socket_id};
-			
-			
-			// send it via ajax
-			$.ajax({
-				url: "/ajax/send-colors.php",
-				data: colors,
-				dataType: "json"
-			}).done(function(response) {
-				
-				var status = (response && response.status) ? response.status : "no status";
-				
-				console.log("colors sent. response: " + status);
-				
-			}).fail(function() {
-				
-				console.log("error. ajax failure when sending colors");
-			});
-		}
+			console.log("error. ajax failure when sending colors. response: ");
+			console.log(response);
+		});
 	}
 });
