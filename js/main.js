@@ -9,6 +9,15 @@ $(document).ready(function() {
 	var arduinoIP = "192.168.1.82";
 	
 	
+	// set debug mode (to not actually send colors to the arduino)
+	var isDebugging = true;
+	
+	
+	// set other initial variables
+	var numDragEvents = 0;
+	
+	
+	
 	
 	
 	
@@ -17,12 +26,12 @@ $(document).ready(function() {
 	
 	// ---------------------------- event listeners ---------------------------
 	
-	// listen to any change in the text field and attempt to process its value
-	$(document).on("keyup change", "#gradientString", processColors);
-	
-	
 	// listen to the send colors button to send our colors
 	$(document).on("click", "#sendColors", sendColors);
+	
+	
+	// listen to add new color pickers
+	$(document).on("click", "#colorBox", addNewColorPicker);
 	
 	
 	
@@ -35,10 +44,125 @@ $(document).ready(function() {
 	
 	// ---------------------------- initial execution ---------------------------
 	
-	// kick things off by processing the colors
+	// set the colors we want to start with
+	colorArray = ["#8046df", "#16bdb3", "#FFCC66", "#FF0000", "#FF00FF"];
+	
+	
+	// create a color picker from color value we want to start with
+	for (var i = 0; i < colorArray.length; i++) {
+		
+		createColorPicker(colorArray[i], i / (colorArray.length - 1));
+	}
+	
+	
+	// process the initial colors
 	processColors();
+		
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	// ------------------------------ color pickers -----------------------------
+	
+	function createColorPicker(colorValue, percentage) {
+		
+		// create a new color picker
+		$input = $("<input type='hidden' class='color-picker' value='" + colorValue + "' />");
+		
+		$input.appendTo("body");
+		
+		$input.miniColors({
+			change: processColors,
+			mouseup: sendColors
+		});
+		
+		
+		// position the color picker "trigger"
+		$trigger = $input.next();
+		$trigger.css({
+			position: "absolute",
+			top: "0px",
+			left: (percentage * 100) + "%"
+		});
+		
+		
+		// style the trigger with the background color it's supposed to have (to fix a bug where the
+		// trigger doesn't actually get the background color set on the right element to begin with)
+		$trigger.css({
+			backgroundColor: colorValue
+		});
+		
+		
+		// allow the trigger to be draggable
+		$trigger.drags({vertical: false, onDrag: handleTriggerDrag, onRelease: handleTriggerDragRelease});
+		
+		
+		// add the trigger to the input as a data property
+		$input.data("trigger", $trigger);
+	}
+	
+	
+	function addNewColorPicker(event) {
+		
+		// get the location that was clicked
+		var fullWidth = $("#colorBox").width();
+		var percentage = event.offsetX / fullWidth;
+		
+		
+		// get the color at that location
+		var colorValue = getColorAtLocation(percentage * numLEDs);
+		
+		
+		// add the new color picker
+		createColorPicker("#" + colorValue, percentage);
+		
+		
+		// re-process the colors
+		processColors();
+	}
+	
+	
+	function handleTriggerDrag() {
+		
+		// keep track of how many drag events we've had
+		numDragEvents++;
+		
+		
+		// when we get to the point where we've dragged a little bit, then disable
+		// all the inputs, so when we release the the mouse, we won't show the color picker
+		if (numDragEvents == 3) $("input.color-picker").prop("disabled", true);
+		
+		
+		// if we've dragged the trigger down far enough, get rid of it
+		// xxxxxx
+		
+		
+		// process the new colors
+		processColors();
+	}
+	
+	
+	function handleTriggerDragRelease() {
+		
+		// if we actually dragged something, send the colors now
+		if (numDragEvents > 0) sendColors();
+		
+		
+		// reset the drag event counter
+		numDragEvents = 0;
+		
+		
+		// reenable the inputs (in case they were disabled during the drag)
+		setTimeout(function() { $("input.color-picker").prop("disabled", false); }, 30);
+	}
+	
+	
+		
 	
 	
 	
@@ -51,8 +175,26 @@ $(document).ready(function() {
 	
 	function processColors() {
 		
+		// create a gradient color css string from the color pickers
+		var colorString = "";
+		var fullWidth = $("#colorBox").width();
+		
+		$("input.color-picker").each(function() {
+			
+			$input = $(this);
+			$trigger = $input.data("trigger");
+			
+			var percentage = Math.round((parseInt($trigger.css("left")) / fullWidth) * 100);
+			
+			colorString += $(this).val() + " " + percentage + "%, ";
+		});
+		
+		colorString = colorString.replace(/, $/, "");
+		
+		/* old:
 		// get the color string from the input field
 		var colorString = $("#gradientString").val();
+		*/
 		
 				
 		// parse the gradient string to get each color stop on the gradient
@@ -63,12 +205,14 @@ $(document).ready(function() {
 		drawGradient($("#colorBox"), colorArray);
 		
 		
+		/* old:
 		// get the values from the gradient
-		var colorValues = getValuesFromGradient($("#colorBox"));
+		var colorValues = getValuesFromGradient();
 		
 		
 		// use the color values to create boxes on the screen to test our math
 		testColorValues(colorValues);
+		*/
 	}
 	
 	
@@ -127,9 +271,10 @@ $(document).ready(function() {
 	
 	
 	
-	function getValuesFromGradient($canvas) {
+	function getValuesFromGradient() {
 		
 		// get the canvas context and get a row of pixels
+		var $canvas = $("#colorBox");
 		var context = $canvas[0].getContext("2d");
 		var imageData = context.getImageData(0, 0, numLEDs, 1);
 		var pixelData = imageData.data;
@@ -149,6 +294,26 @@ $(document).ready(function() {
 	}
 	
 	
+	function getColorAtLocation(location) {
+		
+		// limit the location (just to avoid errors)
+		location = Math.round(location);
+		if (location >= numLEDs) location = numLEDs - 1;
+		
+		
+		// get the canvas context and get a row of pixels
+		var $canvas = $("#colorBox");
+		var context = $canvas[0].getContext("2d");
+		var imageData = context.getImageData(0, 0, numLEDs, 1);
+		var pixelData = imageData.data;
+		
+		
+		// return the color value at the location
+		return rgbToHex(pixelData[location * 4], pixelData[(location * 4) + 1], pixelData[(location * 4) + 2]);
+	}
+	
+	
+	/* old:
 	
 	function testColorValues(colorValues) {
 		
@@ -167,6 +332,8 @@ $(document).ready(function() {
 		// output the color list in the textarea
 		$("#outputColors").val(colorValues.join());
 	}
+	
+	*/
 	
 	
 	
@@ -189,18 +356,40 @@ $(document).ready(function() {
 	
 	function sendColors() {
 		
-		// send the colors to the arduino via ajax
-		$.ajax({
-			url: "http://" + arduinoIP + "/?" + $("#outputColors").val() + "."
-		}).done(function(response) {
+		// get the colors from the canvas gradient
+		var colorValues = getValuesFromGradient();
+		
+		
+		// turn the color array into a string
+		var colorString = colorValues.join();
+		
+		
+		/* old:
+		var colorString = $("#outputColors").val();
+		*/
+		
+		
+		// if we're debugging, just output the colors
+		if (isDebugging) {
 			
-			console.log("colors sent. response: ");
-			console.log(response);
+			console.log(colorString);
 			
-		}).fail(function(response) {
 			
-			console.log("error. ajax failure when sending colors. response: ");
-			console.log(response);
-		});
+		// otherwise, send the colors to the arduino via ajax
+		} else {
+			
+			$.ajax({
+				url: "http://" + arduinoIP + "/?" + colorString + "."
+			}).done(function(response) {
+				
+				console.log("colors sent. response: ");
+				console.log(response);
+				
+			}).fail(function(response) {
+				
+				console.log("error. ajax failure when sending colors. response: ");
+				console.log(response);
+			});
+		}
 	}
 });
