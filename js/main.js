@@ -6,16 +6,17 @@ $(document).ready(function() {
 	
 	
 	// set the IP address of the Arduino
-	var arduinoIP = "192.168.1.82";
+	// var arduinoIP = "192.168.1.82"; // reserved IP at Ben's house
+	var arduinoIP = "192.168.1.46"; // reserved IP at Clover
 	
 	
 	// set debug mode (to not actually send colors to the arduino)
-	var isDebugging = true;
+	var isDebugging = false;
 	
 	
 	// set other initial variables
 	var numDragEvents = 0;
-	
+	var keyColorIndexes = [];
 	
 	
 	
@@ -200,6 +201,9 @@ $(document).ready(function() {
 		drawGradient($("#colorBox"), colorArray);
 		
 		
+		// store the specific color indexes that we'll consider "key" values
+		// (these correspond to the color picker percentages)
+		storeKeyColorIndexes(colorArray);
 	}
 	
 	
@@ -272,7 +276,16 @@ $(document).ready(function() {
 		
 		for (var i = 0; i < pixelData.length; i += 4) {
 			
-			colorArray.push(rgbToHex(pixelData[i], pixelData[i + 1], pixelData[i + 2]));
+			// get the hex value of this pixel
+			var hexString = rgbToHex(pixelData[i], pixelData[i + 1], pixelData[i + 2]);
+			
+			
+			// if this color is a key color, add an asterisk to it
+			if (keyColorIndexes.indexOf(i / 4) != -1) hexString += "*";
+			
+			
+			// add this value to the array
+			colorArray.push(hexString);
 		}
 		
 		
@@ -300,10 +313,17 @@ $(document).ready(function() {
 	}
 	
 	
+	function storeKeyColorIndexes(colorArray) {
+		
+		// reset the key color indexes
+		keyColorIndexes = [];
 		
 		
-		
+		// for each color value in the array, use its percentage to determine the index of
+		// key colors
+		for (var i = 0; i < colorArray.length; i++) {
 			
+			keyColorIndexes.push(Math.round(colorArray[i].percent * (numLEDs - 1)));
 		}
 	}
 	
@@ -345,7 +365,7 @@ $(document).ready(function() {
 		} else {
 			
 			$.ajax({
-				url: "http://" + arduinoIP + "/?" + colorString + "."
+				url: "http://" + arduinoIP + "/c/?" + colorString + "."
 			}).done(function(response) {
 				
 				console.log("colors sent. response: ");
