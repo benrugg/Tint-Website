@@ -191,11 +191,6 @@ $(document).ready(function() {
 		
 		colorString = colorString.replace(/, $/, "");
 		
-		/* old:
-		// get the color string from the input field
-		var colorString = $("#gradientString").val();
-		*/
-		
 				
 		// parse the gradient string to get each color stop on the gradient
 		var colorArray = parseGradientString(colorString);
@@ -205,14 +200,6 @@ $(document).ready(function() {
 		drawGradient($("#colorBox"), colorArray);
 		
 		
-		/* old:
-		// get the values from the gradient
-		var colorValues = getValuesFromGradient();
-		
-		
-		// use the color values to create boxes on the screen to test our math
-		testColorValues(colorValues);
-		*/
 	}
 	
 	
@@ -313,28 +300,12 @@ $(document).ready(function() {
 	}
 	
 	
-	/* old:
-	
-	function testColorValues(colorValues) {
-		
-		// clear the previous test color container
-		$("#testColorContainer").empty();
 		
 		
-		// with each color value, add a box that shows its color
-		for (var i = 0; i < colorValues.length; i++) {
+		
 			
-			// create the test color box
-			$("#testColorContainer").append($("<div>").css("backgroundColor", "#" + colorValues[i]));
 		}
-		
-		
-		// output the color list in the textarea
-		$("#outputColors").val(colorValues.join());
 	}
-	
-	*/
-	
 	
 	
 	function rgbToHex(r, g, b) {
@@ -362,11 +333,6 @@ $(document).ready(function() {
 		
 		// turn the color array into a string
 		var colorString = colorValues.join();
-		
-		
-		/* old:
-		var colorString = $("#outputColors").val();
-		*/
 		
 		
 		// if we're debugging, just output the colors
