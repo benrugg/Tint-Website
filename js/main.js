@@ -1,8 +1,12 @@
 $(document).ready(function() {
 	
-	// set the initial canvas width to the same number that we're going to use for the
-	// number of LEDs
+	// set the number of LEDs that will be used in the strip
 	var numLEDs = 160;
+	
+	
+	// set the number of LEDs on the left and right that we will consider a "buffer"
+	// because they're outside of the viewable area
+	var numBufferLEDs = 20;
 	
 	
 	// set the IP address of the Arduino
@@ -17,6 +21,12 @@ $(document).ready(function() {
 	// set other initial variables
 	var numDragEvents = 0;
 	var keyColorIndexes = [];
+	
+	
+	// set the number of usable LEDs (excluding the buffer LEDs). (This number should be
+	// what is hardcoded for the width and height of the canvas tag in the markup, and
+	// this is what will be used for all the gradient math)
+	var numUsableLEDs = numLEDs - (numBufferLEDs * 2);
 	
 	
 	
@@ -46,7 +56,8 @@ $(document).ready(function() {
 	// ---------------------------- initial execution ---------------------------
 	
 	// set the colors we want to start with
-	colorArray = ["#8046df", "#16bdb3", "#FFCC66", "#FF0000", "#FF00FF"];
+	//colorArray = ["#8046df", "#16bdb3", "#FFCC66", "#FF0000", "#FF00FF"];
+	colorArray = ["#8046df", "#16bdb3"];
 	
 	
 	// create a color picker from color value we want to start with
@@ -116,7 +127,7 @@ $(document).ready(function() {
 		
 		
 		// get the color at that location
-		var colorValue = getColorAtLocation(percentage * numLEDs);
+		var colorValue = getColorAtLocation(percentage * numUsableLEDs);
 		
 		
 		// add the new color picker
@@ -245,7 +256,7 @@ $(document).ready(function() {
 		
 		// get the canvas context and create a linear gradient
 		var context = $canvas[0].getContext("2d");
-		var gradient = context.createLinearGradient(0, 0, numLEDs, 0);
+		var gradient = context.createLinearGradient(0, 0, numUsableLEDs, 0);
 		
 		
 		// add the colors from our array
@@ -257,7 +268,7 @@ $(document).ready(function() {
 		
 		// draw a rectangle covering the whole canvas
 		context.fillStyle = gradient;
-		context.fillRect(0, 0, numLEDs, $canvas.height());
+		context.fillRect(0, 0, numUsableLEDs, $canvas.height());
 	}
 	
 	
@@ -267,7 +278,7 @@ $(document).ready(function() {
 		// get the canvas context and get a row of pixels
 		var $canvas = $("#colorBox");
 		var context = $canvas[0].getContext("2d");
-		var imageData = context.getImageData(0, 0, numLEDs, 1);
+		var imageData = context.getImageData(0, 0, numUsableLEDs, 1);
 		var pixelData = imageData.data;
 		
 		
@@ -289,6 +300,21 @@ $(document).ready(function() {
 		}
 		
 		
+		// take the first color and insert it at the beginning for our buffer
+		var firstColor = colorArray[0];
+		if (firstColor.indexOf("*") != -1) firstColor = firstColor.substr(0, 6);
+		
+		for (i = 0; i < numBufferLEDs; i++) colorArray.unshift(firstColor);
+		
+		
+		// take the last color and insert it at the beginning for our buffer
+		var lastColor = colorArray[colorArray.length - 1];
+		if (lastColor.indexOf("*") != -1) lastColor = lastColor.substr(0, 6);
+		
+		for (i = 0; i < numBufferLEDs; i++) colorArray.push(lastColor);
+		
+		
+		
 		// return the color array
 		return colorArray;
 	}
@@ -298,13 +324,13 @@ $(document).ready(function() {
 		
 		// limit the location (just to avoid errors)
 		location = Math.round(location);
-		if (location >= numLEDs) location = numLEDs - 1;
+		if (location >= numUsableLEDs) location = numUsableLEDs - 1;
 		
 		
 		// get the canvas context and get a row of pixels
 		var $canvas = $("#colorBox");
 		var context = $canvas[0].getContext("2d");
-		var imageData = context.getImageData(0, 0, numLEDs, 1);
+		var imageData = context.getImageData(0, 0, numUsableLEDs, 1);
 		var pixelData = imageData.data;
 		
 		
@@ -323,7 +349,7 @@ $(document).ready(function() {
 		// key colors
 		for (var i = 0; i < colorArray.length; i++) {
 			
-			keyColorIndexes.push(Math.round(colorArray[i].percent * (numLEDs - 1)));
+			keyColorIndexes.push(Math.round(colorArray[i].percent * (numUsableLEDs - 1)));
 		}
 	}
 	
@@ -349,6 +375,10 @@ $(document).ready(function() {
 		
 		// get the colors from the canvas gradient
 		var colorValues = getValuesFromGradient();
+		
+		
+		// reverse the color array (because the LED strips are mounted facing away from the viewer)
+		colorValues.reverse();
 		
 		
 		// turn the color array into a string
