@@ -34,7 +34,7 @@ input.miniColors {
 	left: 5px;
 	width: 150px;
 	height: 150px;
-	background: url(/images/colors.png) -40px 0 no-repeat;
+	background: url(/assets/colors.png) -40px 0 no-repeat;
 	cursor: crosshair;
 }
 
@@ -48,7 +48,7 @@ input.miniColors {
 	left: 160px;
 	width: 20px;
 	height: 150px;
-	background: url(/images/colors.png) 0 0 no-repeat;
+	background: url(/assets/colors.png) 0 0 no-repeat;
 	cursor: crosshair;
 }
 
@@ -62,7 +62,7 @@ input.miniColors {
 	left: 5px;
 	width: 20px;
 	height: 150px;
-	background: url(/images/colors.png) -20px 0 no-repeat;
+	background: url(/assets/colors.png) -20px 0 no-repeat;
 	cursor: crosshair;
 }
 

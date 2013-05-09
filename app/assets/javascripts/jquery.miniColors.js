@@ -219,12 +219,17 @@ if(jQuery) (function($) {
 				// Prevent text selection in IE
 				selector.on('selectstart', function() { return false; });
 				
+				/*
+				// NOTE: This section was commented out by Ben, because the $.browser property is no longer
+				//       supported in jquery 1.9
+				
 				// Hide on resize (IE7/8 trigger this when any element is resized...)
 				if( !$.browser.msie || ($.browser.msie && $.browser.version >= 9) ) {
 					$(window).on('resize.miniColors', function(event) {
 						hide(input);
 					});
 				}
+				*/
 				
 				$(document)
 					.on('mousedown.miniColors touchstart.miniColors', function(event) {
