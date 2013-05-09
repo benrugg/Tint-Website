@@ -1,6 +1,11 @@
 Tint::Application.routes.draw do
   
-  root :to => "Application#index"
+  root :to => "Home#index"
+  
+  get "home/index"
+  
+  get "api/choose_random_color"
+  
   
   # The priority is based upon order of creation:
   # first created -> highest priority.
