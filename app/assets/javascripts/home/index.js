@@ -1,4 +1,5 @@
-//= require_tree .
+//= require jquery.miniColors
+//= require quick-drags
 
 $(document).ready(function() {
 	
