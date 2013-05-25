@@ -1,3 +1,5 @@
+//= require_tree .
+
 $(document).ready(function() {
 	
 	// set the number of LEDs that will be used in the strip
