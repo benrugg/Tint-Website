@@ -4,7 +4,7 @@ Tint::Application.routes.draw do
   
   get "home/index"
   
-  get "api/choose_random_color"
+  get "api/create_random_gradient"
   
   
   # The priority is based upon order of creation:
