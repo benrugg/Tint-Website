@@ -17,7 +17,7 @@ describe Api do
     api = Api.new
     
     random_color_hex = api.generate_random_color().hex
-    random_color_hex.should match(/#[0-9a-f]{6}/i)
+    random_color_hex.should match(/^#[0-9a-f]{6}$/i)
     
   end
   
@@ -28,7 +28,8 @@ describe Api do
     gradient_colors = api.create_random_gradient
     
     gradient_colors.should have(160).items
-    gradient_colors[0].should match (/#[0-9a-f]{6}/i)
+    gradient_colors[0].should match(/^#[0-9a-f]{6}\*$/i)
+    gradient_colors[1].should match(/^#[0-9a-f]{6}$/i)
     
   end
   

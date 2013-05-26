@@ -9,9 +9,13 @@ describe ApiController do
       response.should be_success
     end
     
-    it "creates 160 colors" do
+    it "creates 160 colors with key colors" do
       get 'create_random_gradient'
-      assigns(:gradient).should have(160).items
+      gradient = assigns(:gradient)
+      
+      gradient.should have(160).items
+      gradient[0].should match(/^#[0-9a-f]{6}\*$/i)
+      gradient[1].should match(/^#[0-9a-f]{6}$/i)
     end
   end
   
