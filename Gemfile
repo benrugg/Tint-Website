@@ -1,9 +1,12 @@
 source 'https://rubygems.org'
 
+# Set a specific version of ruby for heroku
+ruby "2.0.0"
+
+# Set a specific version of rails
 gem 'rails', '3.2.13'
 
-#gem 'sqlite3'
-
+# Include gems that will be used in all environments
 gem 'colormath'
 gem 'rest-client'
 
@@ -13,10 +16,6 @@ gem 'rest-client'
 group :assets do
   gem 'sass-rails',   '~> 3.2.3'
   gem 'coffee-rails', '~> 3.2.1'
-
-  # See https://github.com/sstephenson/execjs#readme for more supported runtimes
-  # gem 'therubyracer', :platforms => :ruby
-
   gem 'uglifier', '>= 1.0.3'
 end
 

@@ -13,7 +13,11 @@ Tint::Application.configure do
 
   # Compress JavaScripts and CSS
   config.assets.compress = true
-
+  
+  # Make sure to specifically precompile files that aren't included in the
+  # application.js manifest
+  config.assets.precompile += ["api.js", "home.js"]
+  
   # Don't fallback to assets pipeline if a precompiled asset is missed
   config.assets.compile = false
 
