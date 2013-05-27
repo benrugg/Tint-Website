@@ -2,8 +2,12 @@
 	
 	<% @gradient.each do |color| %>
 		
-		<div style="background-color: <%= color %>;"></div>
+		<div style="background-color: #<%= color %>;"></div>
 		
 	<% end %>
 	
 </div>
+
+<pre class="color_string">
+color string: <%= @color_string %>
+</pre>

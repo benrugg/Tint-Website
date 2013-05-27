@@ -28,8 +28,8 @@ describe Api do
     gradient_colors = api.create_random_gradient
     
     gradient_colors.should have(160).items
-    gradient_colors[0].should match(/^#[0-9a-f]{6}\*$/i)
-    gradient_colors[1].should match(/^#[0-9a-f]{6}$/i)
+    gradient_colors[0].should match(/^[0-9a-f]{6}\*$/i)
+    gradient_colors[1].should match(/^[0-9a-f]{6}$/i)
     
   end
   

@@ -47,7 +47,7 @@ class Api
       
       num_steps_in_gradient_part.times do |j|
         
-        gradient_colors << ColorMath::Blend.alpha(color1, color2, j / num_steps_in_gradient_part.to_f).hex + (j == 0 ? "*" : "")
+        gradient_colors << ColorMath::Blend.alpha(color1, color2, j / num_steps_in_gradient_part.to_f).hex[1..6] + (j == 0 ? "*" : "")
         
       end
       

@@ -7,8 +7,17 @@ class ApiController < ApplicationController
     @gradient = api.create_random_gradient
     
     
+    # reverse the gradient (because the rgb wall is mounted facing away from the viewer)
+    @gradient.reverse!
+    
+    
+    # join the values to create a long string
+    @color_string = "/c/" + @gradient.join(",") + "."
+    
+    
+    
     # if we want to test this method, render the gradient in the view
-    if params[:test] then
+    if [1, "1", true, "true", "y", "yes"].include? params[:test] then
       
       # render the view
       
@@ -16,10 +25,7 @@ class ApiController < ApplicationController
     # else, send the gradient to the arduino
     else
       
-      # reverse the gradient (because the rgb wall is mounted facing away from the viewer)
-      @gradient.reverse!
-      
-      render text: "not test"
+      render text: @color_string
       
     end
     

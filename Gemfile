@@ -21,6 +21,7 @@ end
 
 group :test, :development do
   gem 'capybara'
+  gem 'selenium-webdriver'
   gem 'rspec-rails'
   gem 'guard-rspec'
   gem 'rb-fsevent', '~> 0.9'

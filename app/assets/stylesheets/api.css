@@ -9,3 +9,9 @@
 	height: 500px;
 	width: .625%;
 }
+
+.color_string {
+	
+	margin: 20px;
+	word-wrap: break-word;
+}
