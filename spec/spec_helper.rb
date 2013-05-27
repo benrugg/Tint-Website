@@ -35,4 +35,11 @@ RSpec.configure do |config|
   # the seed, which is printed after each run.
   #     --seed 1234
   config.order = "random"
+  
+  # Uncomment the line below to exclude any tests using the selenium webdriver.
+  # (Any tests using this driver actually open up a browser, which makes the
+  # test much slower). You can also use this same filter via the command line
+  # like so: rspec . --tag ~driver:selenium
+  # Or you can run only the tests that use selenium by ommitting the tilde.
+  #config.filter_run_excluding :driver => :selenium
 end
