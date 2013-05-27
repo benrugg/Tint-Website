@@ -25,7 +25,7 @@ describe ApiController do
     
     it "creates a color string for the arduino" do
       get 'create_random_gradient', test: "true"
-      assigns(:color_string).should match(/^\/c\/([a-f0-9]{6}\*?,?){160}.$/i)
+      assigns(:color_string).should match(%r{^/c/\?([a-f0-9]{6}\*?,?){160}.$}i)
     end
     
     it "creates a color string with 2, 3, or 4 key colors" do

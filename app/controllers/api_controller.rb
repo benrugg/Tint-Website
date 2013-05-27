@@ -12,7 +12,7 @@ class ApiController < ApplicationController
     
     
     # join the values to create a long string
-    @color_string = "/c/" + @gradient.join(",") + "."
+    @color_string = "/c/?" + @gradient.join(",") + "."
     
     
     
@@ -25,17 +25,11 @@ class ApiController < ApplicationController
     # else, send the gradient to the arduino
     else
       
-      render text: @color_string
+      response = RestClient.get(ARDUINO_URL + @color_string)
+      
+      render json: {gradient: @gradient.join(","), result: response.to_str}
       
     end
     
-    
-    #render json: gradient
-    
-    #@colors = 20.times.map { self::generate_random_color }
-    
-    #render :json => self::generate_random_color
-    
   end
-  
 end
