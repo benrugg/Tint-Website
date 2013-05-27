@@ -1,0 +1,11 @@
+.test_gradient {
+	
+	height: 500px;
+}
+
+.test_gradient div {
+	
+	float: left;
+	height: 500px;
+	width: .625%;
+}

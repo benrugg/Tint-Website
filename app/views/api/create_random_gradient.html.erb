@@ -1,5 +1,9 @@
-<% @gradient.each do |color| %>
+<div class="test_gradient">
 	
-	<div style="background-color: <%= color %>; height: 5px;">&nbsp;</div>
+	<% @gradient.each do |color| %>
+		
+		<div style="background-color: <%= color %>;"></div>
+		
+	<% end %>
 	
-<% end %>
+</div>
