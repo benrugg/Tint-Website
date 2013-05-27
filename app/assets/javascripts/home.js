@@ -12,10 +12,6 @@ $(document).ready(function() {
 	var numBufferLEDs = 20;
 	
 	
-	// set the url of the Arduino
-	var arduinoURL = "cloversites.dyndns.org:10000";
-	
-	
 	// set debug mode (to not actually send colors to the arduino)
 	var isDebugging = false;
 	
@@ -397,7 +393,7 @@ $(document).ready(function() {
 		} else {
 			
 			$.ajax({
-				url: "http://" + arduinoURL + "/c/?" + colorString + ".",
+				url: window.arduinoURL + "/c/?" + colorString + ".",
 				timeout: 10000
 			}).done(function(response) {
 				
