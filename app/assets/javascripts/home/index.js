@@ -12,9 +12,8 @@ $(document).ready(function() {
 	var numBufferLEDs = 20;
 	
 	
-	// set the IP address of the Arduino
-	// var arduinoIP = "192.168.1.82"; // reserved IP at Ben's house
-	var arduinoIP = "192.168.1.46"; // reserved IP at Clover
+	// set the url of the Arduino
+	var arduinoURL = "cloversites.dyndns.org:10000";
 	
 	
 	// set debug mode (to not actually send colors to the arduino)
@@ -398,7 +397,8 @@ $(document).ready(function() {
 		} else {
 			
 			$.ajax({
-				url: "http://" + arduinoIP + "/c/?" + colorString + "."
+				url: "http://" + arduinoURL + "/c/?" + colorString + ".",
+				timeout: 10000
 			}).done(function(response) {
 				
 				console.log("colors sent. response: ");
