@@ -19,8 +19,8 @@ describe ApiController do
       gradient = assigns(:gradient)
       
       gradient.should have(160).items
-      gradient[0].should match(/^[0-9a-f]{6}\*$/i)
-      gradient[1].should match(/^[0-9a-f]{6}$/i)
+      gradient[0].should match(/^[0-9a-f]{6}$/i)
+      gradient[20].should match(/^[0-9a-f]{6}\*$/i)
     end
     
     it "creates a color string for the arduino" do
