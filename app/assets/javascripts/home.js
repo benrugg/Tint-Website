@@ -19,6 +19,7 @@ $(document).ready(function() {
 	// set other initial variables
 	var numDragEvents = 0;
 	var keyColorIndexes = [];
+	var isInitialized = false;
 	
 	
 	// set the number of usable LEDs (excluding the buffer LEDs). (This number should be
@@ -53,21 +54,59 @@ $(document).ready(function() {
 	
 	// ---------------------------- initial execution ---------------------------
 	
-	// set the colors we want to start with
-	//colorArray = ["#8046df", "#16bdb3", "#FFCC66", "#FF0000", "#FF00FF"];
-	colorArray = ["#8046df", "#16bdb3"];
-	
-	
-	// create a color picker from color value we want to start with
-	for (var i = 0; i < colorArray.length; i++) {
+	// load in the current colors that the arduino is showing
+	$.ajax({
+		url: window.arduinoURL + "/g/",
+		timeout: 10000
+	}).done(function(response) {
 		
-		createColorPicker(colorArray[i], i / (colorArray.length - 1));
-	}
-	
-	
-	// process the initial colors
-	processColors();
+		// set the flag to signify that we've initialized
+		isInitialized = true;
 		
+		
+		// parse the colors
+		var colorArray = response.split(',');
+		
+		
+		// create a color picker from color value we want to start with
+		for (var i = 0; i < colorArray.length; i++) {
+			
+			// get the color parts (the hex and the percent) from what the
+			// arduino reported. Flip the percent to reverse the gradient
+			// because the rgb wall is mounted facing away from the viewer.
+			var colorStopParts = colorArray[i].split(" ");
+			var color = colorStopParts[0];
+			var percent = 1 - (parseInt(colorStopParts[1]) / 100);
+			
+			createColorPicker(color, percent);
+		}
+		
+		
+		// process the initial colors
+		processColors();
+		
+		
+	}).fail(function(response) {
+		
+		// set the flag to signify that we've initialized
+		isInitialized = true;
+		
+		
+		// since we failed to laod the real colors, just start with some defaults
+		colorArray = ["#8046df", "#16bdb3"];
+		
+		
+		// create a color picker from color value we want to start with
+		for (var i = 0; i < colorArray.length; i++) {
+			
+			createColorPicker(colorArray[i], i / (colorArray.length - 1));
+		}
+		
+		
+		// process the initial colors
+		processColors();
+	});
+	
 	
 	
 	
@@ -118,6 +157,10 @@ $(document).ready(function() {
 	
 	
 	function addNewColorPicker(event) {
+		
+		// if we haven't finished initializing, just quit
+		if (!isInitialized) return;
+		
 		
 		// get the location that was clicked
 		var fullWidth = $("#colorBox").width();
@@ -370,6 +413,10 @@ $(document).ready(function() {
 	// ------------------------ send colors to arduino -----------------------
 	
 	function sendColors() {
+		
+		// if we haven't finished initializing, just quit
+		if (!isInitialized) return;
+		
 		
 		// get the colors from the canvas gradient
 		var colorValues = getValuesFromGradient();
