@@ -27,9 +27,11 @@ class Api
     # initialize variables and randomly (with some weighting) choose how many
     # colors we want in our gradient
     num_colors = 160
+    num_buffer_colors = 20
+    num_usable_colors = num_colors - (num_buffer_colors * 2)
     num_random_colors = @random.rand < 0.66 ? 2 : (@random.rand < 0.66 ? 3 : 4)
     num_gradient_parts = num_random_colors - 1
-    num_steps_in_gradient_part = num_colors / num_gradient_parts
+    num_steps_in_gradient_part = num_usable_colors / num_gradient_parts
     
     
     # generate the random colors
@@ -54,14 +56,18 @@ class Api
     end
     
     
-    # if we have one less color than we need, duplicate the last one (this would
-    # happen if we have 4 key colors, because we would have only made 53 steps
-    # in each gradient part, for a total of 159)
-    if gradient_colors.length == 159 then gradient_colors[159] = gradient_colors[158] end
-    
-    
     # add an asterisk to the last key color value
-    gradient_colors[159] += "*"
+    gradient_colors[num_usable_colors - 1] += "*"
+    
+    
+    # buffer the beginning (getting rid of the asterisk)
+    first_color = gradient_colors[0][0..5]
+    num_buffer_colors.times { gradient_colors.unshift first_color }
+    
+    
+    # buffer the ending (getting rid of the asterisk)
+    last_color = gradient_colors[gradient_colors.length - 1][0..5]
+    num_buffer_colors.times { gradient_colors.push last_color }
     
     
     # return the full gradient
