@@ -57,7 +57,8 @@ $(document).ready(function() {
 	// load in the current colors that the arduino is showing
 	$.ajax({
 		url: window.arduinoURL + "/g/",
-		timeout: 10000
+		timeout: 10000,
+		cache: false
 	}).done(function(response) {
 		
 		// set the flag to signify that we've initialized
@@ -74,9 +75,11 @@ $(document).ready(function() {
 			// get the color parts (the hex and the percent) from what the
 			// arduino reported. Flip the percent to reverse the gradient
 			// because the rgb wall is mounted facing away from the viewer.
+			// And map the range of 13% - 87% to 0% - 100% to reverse the 
+			// buffer that has been applied
 			var colorStopParts = colorArray[i].split(" ");
 			var color = colorStopParts[0];
-			var percent = 1 - (parseInt(colorStopParts[1]) / 100);
+			var percent = mapRange(1 - (parseInt(colorStopParts[1]) / 100), .13, .87, 0, 1);
 			
 			createColorPicker(color, percent);
 		}
@@ -441,7 +444,8 @@ $(document).ready(function() {
 			
 			$.ajax({
 				url: window.arduinoURL + "/c/?" + colorString + ".",
-				timeout: 10000
+				timeout: 10000,
+				cache: false
 			}).done(function(response) {
 				
 				console.log("colors sent. response: ");
