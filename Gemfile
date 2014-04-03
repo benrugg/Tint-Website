@@ -1,10 +1,10 @@
 source 'https://rubygems.org'
 
 # Set a specific version of ruby for heroku
-ruby "2.0.0"
+ruby "2.1.1"
 
 # Set a specific version of rails
-gem 'rails', '3.2.13'
+gem 'rails', '3.2.17'
 
 # Include gems that will be used in all environments
 gem 'colormath'
